@@ -20,7 +20,14 @@ namespace SudokuConsoleApplication
                 difficulty = "Easy";
             }
             SudokuGrid grid = new SudokuGrid(@"..\..\..\" + difficulty + @"Sudoku.txt");
-            SimpleSudokuSolver sudokuSolver = new SimpleSudokuSolver(grid);
+
+            if (grid.Grid == null)
+            {
+                Console.WriteLine("Error, cannot read grid from file.");
+                return;
+            }
+
+            HarderSudokuSolver sudokuSolver = new HarderSudokuSolver(grid);
             sudokuSolver.Solve();
         }
     }

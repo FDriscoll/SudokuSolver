@@ -13,7 +13,16 @@ namespace SudokuProjectClassLibrary
             Grid = ReadGridFromFile(sudokuPath);
         }
 
+        public SudokuGrid(int[,] grid)
+        {
+            Grid = grid;
+        }
+
         public int[,] Grid { get; set; }
+        public List<SquareCoordinate> EmptySquareList
+        {
+            get { return FindAllEmptySquares();  }
+        }
         
         public void PrintGrid()
         {
@@ -25,6 +34,24 @@ namespace SudokuProjectClassLibrary
                 }
                 Console.WriteLine("");
             }
+        }
+
+        public List<SquareCoordinate> FindAllEmptySquares()
+        {
+            var emptySquareList = new List<SquareCoordinate>();
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (Grid[i, j] == -1)
+                    {
+                        emptySquareList.Add(new SquareCoordinate(i, j));
+                    }
+                }
+            }
+
+            return emptySquareList;
         }
 
         public void FillInSquare(SquareCoordinate squareCoordinate, int value)
@@ -47,8 +74,19 @@ namespace SudokuProjectClassLibrary
                 for (int j = 0; j < 9; j++)
                 {
                     char numberToInsert = sudokuString[0];
-                                        
-                    grid[i,j] = (int)Char.GetNumericValue(numberToInsert);
+
+                    if (numberToInsert == '_')
+                    {
+                        grid[i, j] = -1;
+                    }
+                    else if ((int)Char.GetNumericValue(numberToInsert) <= 9 && (int)Char.GetNumericValue(numberToInsert) >= 1)
+                    {
+                        grid[i, j] = (int)Char.GetNumericValue(numberToInsert);
+                    }
+                    else
+                    {
+                        return null;
+                    }
                     sudokuString = sudokuString.Remove(0, 1);
                 }
             }
