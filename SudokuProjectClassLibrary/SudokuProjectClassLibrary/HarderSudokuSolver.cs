@@ -24,7 +24,9 @@ namespace SudokuProjectClassLibrary
 
         private void GuessASquare()
         {
-            SudokuGuessState currentState = new SudokuGuessState(new SudokuGrid(Grid.Grid));
+            int[,] savedSudokuArray = new int[9, 9];
+            Array.Copy(Grid.Grid, savedSudokuArray, 81);
+            SudokuGuessState currentState = new SudokuGuessState(new SudokuGrid(savedSudokuArray));
             List<SquareCoordinate> emptySquareList = Grid.EmptySquareList;
             currentState.GuessingSquare = emptySquareList[0];
             foreach (SquareCoordinate square in emptySquareList)
