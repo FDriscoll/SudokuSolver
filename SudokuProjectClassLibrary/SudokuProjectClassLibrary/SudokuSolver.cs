@@ -18,19 +18,18 @@ namespace SudokuProjectClassLibrary
         // If there's only one valid option it fills it in.
         // Else it looks for the next empty square.
         // Terminates once grid is solved or once it cannot fill in any more squares.
-        public void Solve(Action CallbackWhenStuck, Action CallbackWhenContradiction)
+        public SudokuGrid Solve()
         {
-            while (Grid.EmptySquareList.Count != 0)
+            while (Grid.FindAllEmptySquares().Count != 0)
             {
                 bool hasASquareBeenFilled = false;
-                bool isThereAContradiction = false;
-                foreach (var emptySquare in Grid.EmptySquareList)
+                foreach (var emptySquare in Grid.FindAllEmptySquares())
                 {
                     List<int> validOptionsForSquare = DetermineValidOptionsForSquare(emptySquare);
+
                     if (validOptionsForSquare.Count == 0)
                     {
-                        isThereAContradiction = true;
-                        break;
+                        return null;
                     }
                     if (validOptionsForSquare.Count == 1)
                     {
@@ -38,19 +37,15 @@ namespace SudokuProjectClassLibrary
                         hasASquareBeenFilled = true;
                     }
                 }
-                if (isThereAContradiction)
+
+                if (!hasASquareBeenFilled)
                 {
-                    CallbackWhenContradiction();
-                }
-                else if (!hasASquareBeenFilled)
-                {
-                    CallbackWhenStuck();
+                    return Grid;
                 }
             }
 
-            Grid.PrintGrid();
-            Console.WriteLine("Solved!");
-            return;
+            return Grid;
+
         }
 
 

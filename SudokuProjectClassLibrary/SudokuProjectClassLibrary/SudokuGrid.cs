@@ -19,10 +19,6 @@ namespace SudokuProjectClassLibrary
         }
 
         public int[,] Grid { get; set; }
-        public List<SquareCoordinate> EmptySquareList
-        {
-            get { return FindAllEmptySquares();  }
-        }
         
         public void PrintGrid()
         {

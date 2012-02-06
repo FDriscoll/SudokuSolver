@@ -7,55 +7,52 @@ namespace SudokuProjectClassLibrary
 {
     public class HarderSudokuSolver : SudokuSolver
     {
-        private Stack<SudokuGuessState> stackSudokuGuessPoints;
+        public HarderSudokuSolver(SudokuGrid grid)
+            : base(grid)
+        {}
 
-        public HarderSudokuSolver(SudokuGrid grid) : base(grid)          
-        {
-            stackSudokuGuessPoints = new Stack<SudokuGuessState>();
-        }
 
-        public void Solve()
+        public SudokuGrid SolveBetter(SudokuGrid inputGrid)
         {
-            while (Grid.EmptySquareList.Count != 0)
+            SudokuGrid grid = inputGrid;
+
+            SudokuSolver simpleSolver = new SudokuSolver(grid);
+            grid = simpleSolver.Solve();
+
+            if (grid == null)
             {
-                Solve(GuessASquare, BackTrack);
+                return null;
             }
-        }
-
-        private void GuessASquare()
-        {
-            int[,] savedSudokuArray = new int[9, 9];
-            Array.Copy(Grid.Grid, savedSudokuArray, 81);
-            SudokuGuessState currentState = new SudokuGuessState(new SudokuGrid(savedSudokuArray));
-            List<SquareCoordinate> emptySquareList = Grid.EmptySquareList;
-            currentState.GuessingSquare = emptySquareList[0];
-            foreach (SquareCoordinate square in emptySquareList)
+            if (grid.FindAllEmptySquares().Count == 0)
             {
-                if (DetermineValidOptionsForSquare(square).Count < DetermineValidOptionsForSquare(currentState.GuessingSquare).Count)
+                return grid;
+            }
+
+            var emptySquareToFill = grid.FindAllEmptySquares()[0];
+            var validOptions = DetermineValidOptionsForSquare(emptySquareToFill);
+
+            var savedSudokuArray = new int[9, 9];
+            Array.Copy(grid.Grid, savedSudokuArray, 81);
+            SudokuGrid savedGrid = new SudokuGrid(savedSudokuArray);
+
+            for (int i = 0; i < validOptions.Count; i++)
+            {
+                if (grid.FindAllEmptySquares().Count != 0)
                 {
-                    currentState.GuessingSquare = square;
+                    grid.FillInSquare(emptySquareToFill, validOptions[i]);
+                }
+                SudokuGrid trialSmallerGrid = SolveBetter(grid);
+                if (trialSmallerGrid != null)
+                {
+                    grid = trialSmallerGrid;                    
+                }
+                else
+                {
+                    grid = savedGrid;
                 }
             }
 
-            currentState.ValidOptionsForSquare = DetermineValidOptionsForSquare(currentState.GuessingSquare);
-            stackSudokuGuessPoints.Push(currentState);
-
-            Grid.FillInSquare(currentState.GuessingSquare, currentState.ValidOptionsForSquare[0]);
-        }
-
-        private void BackTrack()
-        {
-            stackSudokuGuessPoints.Peek().ValidOptionsForSquare.RemoveAt(0);
-
-            while(stackSudokuGuessPoints.Peek().ValidOptionsForSquare.Count == 0)
-            {
-                stackSudokuGuessPoints.Pop();
-                stackSudokuGuessPoints.Peek().ValidOptionsForSquare.RemoveAt(0);
-            }
-
-            SudokuGuessState savePoint = stackSudokuGuessPoints.Peek();
-            savePoint.Grid.FillInSquare(savePoint.GuessingSquare,savePoint.ValidOptionsForSquare[0]);
-            Grid = savePoint.Grid;
+            return grid;
         }
     }
 }
