@@ -11,14 +11,20 @@ namespace SudokuProjectClassLibrary
         public SudokuGrid(string sudokuPath)
         {
             Grid = ReadGridFromFile(sudokuPath);
+            ImmutableGrid = ReadGridFromFile(sudokuPath);
         }
 
         public SudokuGrid(int[,] grid)
         {
-            Grid = grid;
+            Grid = new int[9,9];
+            Array.Copy(grid, Grid, 81);
+
+            ImmutableGrid = new int[9,9];
+            Array.Copy(grid, ImmutableGrid, 81);    
         }
 
         public int[,] Grid { get; set; }
+        public int[,] ImmutableGrid { get; private set; }
         
         public void PrintGrid()
         {

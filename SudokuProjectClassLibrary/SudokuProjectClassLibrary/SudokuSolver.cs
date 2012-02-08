@@ -5,27 +5,38 @@ using System.Text;
 
 namespace SudokuProjectClassLibrary
 {
-    public class SudokuSolver
+    public class SudokuSolver : ISudokuSolver
     {
-        public SudokuSolver(SudokuGrid grid)
+        public SudokuGrid Solve(SudokuGrid inputGrid)
         {
-            this.Grid = grid;
+            SudokuGrid grid = TryAndSolveOnce(inputGrid);
+            if (grid.FindAllEmptySquares().Count != 0)
+            {
+                Console.WriteLine("Solving failed at this step");
+            }
+
+            return grid;
         }
 
-        protected SudokuGrid Grid { get; set; }
-        
         // Solve searches for the next empty square in the grid and finds valid options for that square.
         // If there's only one valid option it fills it in.
         // Else it looks for the next empty square.
         // Terminates once grid is solved or once it cannot fill in any more squares.
-        public SudokuGrid Solve()
-        {
-            while (Grid.FindAllEmptySquares().Count != 0)
+        public SudokuGrid TryAndSolveOnce(SudokuGrid inputGrid)
+        { 
+            if (inputGrid == null)
+            {
+                return null;
+            }
+
+            SudokuGrid grid = inputGrid;
+
+            while (grid.FindAllEmptySquares().Count != 0)
             {
                 bool hasASquareBeenFilled = false;
-                foreach (var emptySquare in Grid.FindAllEmptySquares())
+                foreach (var emptySquare in grid.FindAllEmptySquares())
                 {
-                    List<int> validOptionsForSquare = DetermineValidOptionsForSquare(emptySquare);
+                    List<int> validOptionsForSquare = DetermineValidOptionsForSquare(emptySquare, grid);
 
                     if (validOptionsForSquare.Count == 0)
                     {
@@ -33,37 +44,36 @@ namespace SudokuProjectClassLibrary
                     }
                     if (validOptionsForSquare.Count == 1)
                     {
-                        Grid.FillInSquare(emptySquare, validOptionsForSquare[0]);
+                        grid.FillInSquare(emptySquare, validOptionsForSquare[0]);
                         hasASquareBeenFilled = true;
                     }
                 }
 
                 if (!hasASquareBeenFilled)
                 {
-                    return Grid;
+                    return new SudokuGrid(grid.Grid);
                 }
             }
 
-            return Grid;
-
+            return new SudokuGrid(grid.Grid);
         }
 
 
         // Method establishes which values can fill an empty square by eliminating any values already occurring in row/column/box.
-        protected List<int> DetermineValidOptionsForSquare(SquareCoordinate squareCoordinate)
+        public List<int> DetermineValidOptionsForSquare(SquareCoordinate squareCoordinate, SudokuGrid grid)
         {
             IEnumerable<int> validSquareOptions = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            IEnumerable<int> numbersAlreadyInRow = FindNumbersAlreadyInRow(squareCoordinate.Row);
+            IEnumerable<int> numbersAlreadyInRow = FindNumbersAlreadyInRow(squareCoordinate.Row, grid);
             validSquareOptions = validSquareOptions.Except(numbersAlreadyInRow);
-            IEnumerable<int> numbersAlreadyInColumn = FindNumbersAlreadyInColumn(squareCoordinate.Column);
+            IEnumerable<int> numbersAlreadyInColumn = FindNumbersAlreadyInColumn(squareCoordinate.Column, grid);
             validSquareOptions = validSquareOptions.Except(numbersAlreadyInColumn);
-            IEnumerable<int> numbersAlreadyInBox = FindNumbersAlreadyInBox(squareCoordinate);
+            IEnumerable<int> numbersAlreadyInBox = FindNumbersAlreadyInBox(squareCoordinate, grid);
             validSquareOptions = validSquareOptions.Except(numbersAlreadyInBox);
 
             return validSquareOptions.ToList<int>();
         }
 
-        private List<int> FindNumbersAlreadyInBox(SquareCoordinate squareCoordinate)
+        private List<int> FindNumbersAlreadyInBox(SquareCoordinate squareCoordinate, SudokuGrid grid)
         {
             List<int> listOfNumbersInBox = new List<int>();
 
@@ -78,7 +88,7 @@ namespace SudokuProjectClassLibrary
             {
                 foreach (int j in columnTriple)
                 {
-                    int squareEntry = Grid.Grid[i, j];
+                    int squareEntry = grid.Grid[i, j];
                     if (squareEntry != -1)
                     {
                         listOfNumbersInBox.Add(squareEntry);
@@ -104,13 +114,13 @@ namespace SudokuProjectClassLibrary
             return triple;
         }
 
-        private List<int> FindNumbersAlreadyInColumn(int columnNumber)
+        private List<int> FindNumbersAlreadyInColumn(int columnNumber, SudokuGrid grid)
         {
             List<int> listOfNumbersInColumn = new List<int>();
 
             for (int i = 0; i < 9; i++)
             {
-                int squareEntry = Grid.Grid[i, columnNumber];
+                int squareEntry = grid.Grid[i, columnNumber];
                 if (squareEntry != -1)
                 {
                     listOfNumbersInColumn.Add(squareEntry);
@@ -119,13 +129,13 @@ namespace SudokuProjectClassLibrary
             return listOfNumbersInColumn;
         }
 
-        private List<int> FindNumbersAlreadyInRow(int rowNumber)
+        private List<int> FindNumbersAlreadyInRow(int rowNumber, SudokuGrid grid)
         {
             List<int> listOfNumbersInRow = new List<int>();
 
             for (int i = 0; i < 9; i++)
             {
-                int squareEntry = Grid.Grid[rowNumber, i];
+                int squareEntry = grid.Grid[rowNumber, i];
                 if (squareEntry != -1)
                 {
                     listOfNumbersInRow.Add(squareEntry);

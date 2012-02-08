@@ -5,19 +5,12 @@ using System.Text;
 
 namespace SudokuProjectClassLibrary
 {
-    public class HarderSudokuSolver : SudokuSolver
+    public class HarderSudokuSolver : ISudokuSolver
     {
-        public HarderSudokuSolver(SudokuGrid grid)
-            : base(grid)
-        {}
-
-
-        public SudokuGrid SolveBetter(SudokuGrid inputGrid)
+        public SudokuGrid Solve(SudokuGrid inputGrid)
         {
-            SudokuGrid grid = inputGrid;
-
-            SudokuSolver simpleSolver = new SudokuSolver(grid);
-            grid = simpleSolver.Solve();
+            SudokuSolver simpleSolver = new SudokuSolver();            
+            SudokuGrid grid = simpleSolver.TryAndSolveOnce(inputGrid);
 
             if (grid == null)
             {
@@ -29,30 +22,25 @@ namespace SudokuProjectClassLibrary
             }
 
             var emptySquareToFill = grid.FindAllEmptySquares()[0];
-            var validOptions = DetermineValidOptionsForSquare(emptySquareToFill);
-
-            var savedSudokuArray = new int[9, 9];
-            Array.Copy(grid.Grid, savedSudokuArray, 81);
-            SudokuGrid savedGrid = new SudokuGrid(savedSudokuArray);
-
+            var validOptions = simpleSolver.DetermineValidOptionsForSquare(emptySquareToFill, grid);
+            
             for (int i = 0; i < validOptions.Count; i++)
             {
-                if (grid.FindAllEmptySquares().Count != 0)
+                grid.FillInSquare(emptySquareToFill, validOptions[i]);
+
+                SudokuGrid trialSmallerGrid = Solve(grid);
+
+                if(trialSmallerGrid == null)                
                 {
-                    grid.FillInSquare(emptySquareToFill, validOptions[i]);
-                }
-                SudokuGrid trialSmallerGrid = SolveBetter(grid);
-                if (trialSmallerGrid != null)
-                {
-                    grid = trialSmallerGrid;                    
+                    Array.Copy(grid.ImmutableGrid, grid.Grid, 81);
                 }
                 else
                 {
-                    grid = savedGrid;
+                    return trialSmallerGrid;                    
                 }
             }
 
-            return grid;
+            return null;
         }
     }
 }

@@ -27,9 +27,9 @@ namespace SudokuConsoleApplication
                 return;
             }
 
-            HarderSudokuSolver sudokuSolver = new HarderSudokuSolver(grid);
-            sudokuSolver.SolveBetter(grid).PrintGrid();
+            ISudokuSolver sudokuSolver = new HarderSudokuSolver();
+            sudokuSolver.Solve(grid).PrintGrid();
             
-        }
+         }
     }
 }
