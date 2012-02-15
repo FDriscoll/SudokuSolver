@@ -5,17 +5,22 @@ using System.Text;
 
 namespace SudokuProjectClassLibrary
 {
-    public class HarderSudokuSolver : ISudokuSolver
+    public class HarderSudokuSolver
     {
-        public SudokuGrid Solve(SudokuGrid inputGrid)
+        public ImmutableSudokuGrid Solve(ImmutableSudokuGrid grid)
         {
-            SudokuSolver simpleSolver = new SudokuSolver();            
-            SudokuGrid grid = simpleSolver.TryAndSolveOnce(inputGrid);
+            SudokuGrid mutableGrid = grid.MakeMutableCopy();
 
-            if (grid == null)
+            SudokuSolver simpleSolver = new SudokuSolver();            
+            bool isGridValid = simpleSolver.TryAndSolveOnce(mutableGrid);
+
+            grid = new ImmutableSudokuGrid(grid.Elements);
+
+            if (!isGridValid)
             {
                 return null;
             }
+
             if (grid.FindAllEmptySquares().Count == 0)
             {
                 return grid;
@@ -26,17 +31,11 @@ namespace SudokuProjectClassLibrary
             
             for (int i = 0; i < validOptions.Count; i++)
             {
-                grid.FillInSquare(emptySquareToFill, validOptions[i]);
+                ImmutableSudokuGrid solvedGrid = Solve(grid.WithExtraSquare(emptySquareToFill, validOptions[i]));
 
-                SudokuGrid trialSmallerGrid = Solve(grid);
-
-                if(trialSmallerGrid == null)                
+                if(solvedGrid != null)                
                 {
-                    Array.Copy(grid.ImmutableGrid, grid.Grid, 81);
-                }
-                else
-                {
-                    return trialSmallerGrid;                    
+                    return solvedGrid;
                 }
             }
 

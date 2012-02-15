@@ -19,15 +19,16 @@ namespace SudokuConsoleApplication
                 Console.WriteLine("Stop being difficult.  I'm going to solve an easy one then...");
                 difficulty = "Easy";
             }
-            SudokuGrid grid = new SudokuGrid(@"..\..\..\" + difficulty + @"Sudoku.txt");
 
-            if (grid.Grid == null)
+            ImmutableSudokuGrid grid = new ImmutableSudokuGrid(@"..\..\..\" + difficulty + @"Sudoku.txt");
+
+            if (grid.Elements == null)
             {
                 Console.WriteLine("Error, cannot read grid from file.");
                 return;
             }
 
-            ISudokuSolver sudokuSolver = new HarderSudokuSolver();
+            HarderSudokuSolver sudokuSolver = new HarderSudokuSolver();
             sudokuSolver.Solve(grid).PrintGrid();
             
          }

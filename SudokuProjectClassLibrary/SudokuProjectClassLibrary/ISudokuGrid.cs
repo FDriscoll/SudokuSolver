@@ -5,8 +5,8 @@ using System.Text;
 
 namespace SudokuProjectClassLibrary
 {
-    public interface ISudokuSolver
+    interface ISudokuGrid : IImmutableSudokuGrid
     {
-        SudokuGrid Solve(SudokuGrid grid);
+        new int[,] Elements { get; set; }
     }
 }

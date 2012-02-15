@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{05403AE2-1A21-408E-877C-F336DFA77E00}</ProjectGuid>
+    <ProjectGuid>{23B94A70-AFE4-4F64-A326-8425CD284379}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SudokuProjectClassLibrary</RootNamespace>
-    <AssemblyName>SudokuProjectClassLibrary</AssemblyName>
+    <RootNamespace>SudokuSolverTestProject</RootNamespace>
+    <AssemblyName>SudokuSolverTestProject</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Program Files\NUnit 2.5.10\bin\net-2.0\framework\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,14 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IImmutableSudokuGrid.cs" />
-    <Compile Include="ImmutableSudokuGrid.cs" />
-    <Compile Include="ISudokuGrid.cs" />
+    <Compile Include="HarderSudokuSolverTest.cs" />
+    <Compile Include="ImmutableSudokuGridTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SquareCoordinate.cs" />
-    <Compile Include="SudokuGrid.cs" />
-    <Compile Include="HarderSudokuSolver.cs" />
-    <Compile Include="SudokuSolver.cs" />
+    <Compile Include="SudokuSolverTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SudokuProjectClassLibrary\SudokuProjectClassLibrary.csproj">
+      <Project>{05403AE2-1A21-408E-877C-F336DFA77E00}</Project>
+      <Name>SudokuProjectClassLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
