@@ -58,15 +58,14 @@ namespace SudokuProjectClassLibrary
         public List<int> DetermineValidOptionsForSquare(SquareCoordinate squareCoordinate, IImmutableSudokuGrid grid)
         {
             HashSet<int> validSquareOptions = new HashSet<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            HashSet<int> invalidSquareOptions = new HashSet<int>();
             for (int offset = 1; offset < 9; offset++)
             {
-                invalidSquareOptions.Add(grid.Elements[(squareCoordinate.Row + offset) % 9, squareCoordinate.Column]);
-                invalidSquareOptions.Add(grid.Elements[(squareCoordinate.Row), (squareCoordinate.Column + offset) % 9]);
-                invalidSquareOptions.Add(grid.Elements[(3 * (squareCoordinate.Row / 3)) + offset % 3, (3 * (squareCoordinate.Column / 3)) + (offset - offset % 3) / 3]);
+                validSquareOptions.Remove(grid.Elements[(squareCoordinate.Row + offset) % 9, squareCoordinate.Column]);
+                validSquareOptions.Remove(grid.Elements[(squareCoordinate.Row), (squareCoordinate.Column + offset) % 9]);
+                validSquareOptions.Remove(grid.Elements[(3 * (squareCoordinate.Row / 3)) + offset % 3, (3 * (squareCoordinate.Column / 3)) + (offset - offset % 3) / 3]);
             }
 
-            return validSquareOptions.Except(invalidSquareOptions).ToList<int>();
+            return validSquareOptions.ToList<int>();
         }
     }
 }

@@ -6,7 +6,7 @@ using SudokuProjectClassLibrary;
 
 namespace SudokuConsoleApplication
 {
-    class Program
+    class SudokuSolverProgram
     {
         static void Main(string[] args)
         {

@@ -18,13 +18,49 @@ namespace SudokuProjectClassLibrary
             Elements = (int[,])array.Clone();
         }
 
+        public ImmutableSudokuGrid()
+        {
+            Elements = CreateEmptySudoku();
+        }
+
+        private static int[,] CreateEmptySudoku()
+        {
+            int[,] emptyArray = new int[9, 9];
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    emptyArray[i, j] = -1;
+                }
+            }
+            return emptyArray;
+        }
+
         public int[,] Elements { get; private set; }
 
         public SudokuGrid MakeMutableCopy()
         {
             return new SudokuGrid((int[,])Elements.Clone());
         }
-        
+
+        public List<SquareCoordinate> FindAllFilledSquares()
+        {
+            List<SquareCoordinate> filledSquareList = new List<SquareCoordinate>();
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    if (Elements[i, j] != -1)
+                    {
+                        filledSquareList.Add(new SquareCoordinate(i, j));
+                    }
+                }
+            }
+
+            return filledSquareList;
+        }
+
         public List<SquareCoordinate> FindAllEmptySquares()
         {
             var emptySquareList = new List<SquareCoordinate>();
@@ -50,13 +86,27 @@ namespace SudokuProjectClassLibrary
             return new ImmutableSudokuGrid(arrayForNewGrid);
         }
 
+        public ImmutableSudokuGrid WithoutSquare(SquareCoordinate squareCoordinate)
+        {
+            int[,] arrayForNewGrid = (int[,])Elements.Clone();
+            arrayForNewGrid[squareCoordinate.Row, squareCoordinate.Column] = -1;
+            return new ImmutableSudokuGrid(arrayForNewGrid);
+        }
+
         public void PrintGrid()
         {
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    Console.Write("{0}", Elements[i, j]);
+                    if (Elements[i, j] == -1)
+                    {
+                        Console.Write("_");
+                    }
+                    else
+                    {
+                        Console.Write("{0}", Elements[i, j]);
+                    }
                 }
                 Console.WriteLine("");
             }
